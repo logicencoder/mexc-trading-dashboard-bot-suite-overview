@@ -1,52 +1,50 @@
-# MEXC Trading Dashboard & Bot Suite — overview
+# MEXC Trading Dashboard & Bot Suite
 
-Public description of the **MEXC Trading Dashboard & Multi-Mode Bot** — manual spot trading UI plus automated strategy modes on MEXC. Private code: [mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite).
+Production-grade **MEXC spot** dashboard — manual trading plus **five automation modes** (`MODE1`–`MODE5`), multi-bot profiles, and execution diagnostics in one self-hosted stack.
 
-## What it is
+Private source: [logicencoder/mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite). API credentials via local `.env` — never committed.
 
-**What:** FastAPI backend, rich browser dashboard, and `bot_engine` running **MODE1–MODE5** automation on MEXC spot — order placement, modify/cancel, open orders, balances, and websocket-driven book/trades.  
-**Why:** Operators need one surface for discretionary trades and scripted bots without switching between exchange UI and ad-hoc scripts.  
-**Who:** LogicEncoder operator with MEXC API keys; not a hosted SaaS for third parties.
+## The problem it solves
+
+Discretionary trades and scripted bots usually live in separate tools — exchange UI for manual work, ad-hoc scripts for automation. This suite combines **realtime book + account panels**, **order placement/modify/cancel**, and **mode-specific bot engines** with shared WebSocket ingestion and anti-stale order filtering after cancel/modify.
 
 ## Manual trading UX
 
-**What:** Real-time orderbook, trades tape, balances, open orders; place and replace orders with immediate lifecycle feedback and anti-stale filtering after cancel/modify.  
-**Why:** Latency and state drift cause costly mistakes; the UI reconciles websocket events with REST snapshots.  
-**Who:** Operator executing discretionary trades during volatile sessions.
+Realtime orderbook, trades tape, balances, and open orders. Place and replace orders with immediate lifecycle feedback. The UI reconciles private account protobuf frames with REST snapshots so state drift is visible before it becomes a costly mistake.
 
-## Bot engine (MODE1–MODE5)
+## Bot engine — MODE1 through MODE5
 
-**What:** Mode-specific parameters, runtime logs, scheduled triggers (Mode5 time-based), side and quantity units (coins vs USDT), preset save/load, **multi-bot profiles** for parallel independent runs.  
-**Why:** Different strategies (scalp, grid-like, scheduled dump/buy) should not share one global state machine.  
-**Who:** Operator testing automation with clear mode boundaries before leaving bots unattended.
+| Mode | Summary |
+|------|---------|
+| **MODE1** | Book-reactive limit IOC when price enters your band |
+| **MODE2** | Grid-style limit orders within a range |
+| **MODE3** | Sequential re-entry ladder with stop price |
+| **MODE4** | Resting limit at best bid/ask with re-quote when displaced |
+| **MODE5** | Scheduled single-shot order at configured HH:MM:SS |
 
-## Architecture (private repo)
-
-| Layer | Files | Role |
-|-------|-------|------|
-| UI | `mexc_trading_app.html`, `mexc_trading_app.js` | State, WS rendering, bot controls |
-| API | `mexc_trading_app.py` | REST, MEXC signing, persistence, diagnostics |
-| Engine | `bot_engine.py` | MODE1–MODE5 execution |
-| Protos | `generated_proto/` | Exchange stream decode |
-
-Default dev URL: `http://127.0.0.1:8005`. Credentials via `.env` (`MEXC_API_KEY`, `MEXC_API_SECRET`) — never committed.
+Each mode has isolated parameters, runtime logs, preset save/load, and optional dry-run. **Multi-bot profiles** run parallel independent bots without shared global state. Mode5 supports scheduled triggers; quantity can be expressed in coins or USDT.
 
 ## Diagnostics
 
-**What:** Timing metrics and debug-event persistence for modify-order latency and feed issues.  
-**Why:** MEXC API and WS quirks require evidence when orders look “stuck”.  
-**Who:** Operator tuning execution during incidents.
+Timing metrics and debug-event persistence for modify-order latency and feed issues — evidence when MEXC API or WebSocket quirks make orders look stuck.
 
-## Related repositories
+## Stack
 
-| Repo | Role |
-|------|------|
-| [mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite) | Private — this product tree |
-| [mexc_trading_app](https://github.com/logicencoder/mexc_trading_app) | Related MEXC trading codebase |
-| [mexc-live-stats-plugin](https://github.com/logicencoder/mexc-live-stats-plugin) | WordPress live stats (Hostinger) |
+| Layer | Role |
+|-------|------|
+| `mexc_trading_app.html` + `mexc_trading_app.js` | UI state, WS rendering, bot controls |
+| `mexc_trading_app.py` | REST, MEXC signing, persistence |
+| `bot_engine.py` | MODE1–MODE5 execution |
+| `generated_proto/` | Exchange stream decode |
+
+Default dev URL: `http://127.0.0.1:8005`.
+
+## Related product
+
+[mexc_trading_app-overview](https://github.com/logicencoder/mexc_trading_app-overview) covers the leaner **MODE1 + MODE2** build when you do not need the full mode suite.
 
 See [REPOS.md](REPOS.md).
 
-## Licensing
+---
 
-© LogicEncoder. Exchange use subject to MEXC terms.
+**Made by [Logic Encoder](https://logicencoder.com)** · [GitHub](https://github.com/logicencoder) · [Contact](https://logicencoder.com/contact/)
