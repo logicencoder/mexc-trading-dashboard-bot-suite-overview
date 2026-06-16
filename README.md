@@ -1,33 +1,49 @@
 # MEXC Trading Dashboard & Bot Suite
 
-**Self-hosted MEXC Spot trading desk — manual orders, five automation modes, multi-bot profiles, and execution diagnostics on one screen built for reaction time.**
+Production-grade **MEXC spot** dashboard — manual trading plus **five automation modes** (`MODE1`–`MODE5`), multi-bot profiles, and execution diagnostics in one self-hosted stack.
 
-The **MEXC Trading Dashboard & Bot Suite** combines a **live MEXC Spot console** (order book, trades tape, balances, open orders, fills, deposits) with **MODE1 through MODE5** bot engines and **parallel multi-bot profiles**. Drag-and-collapse panels, save your layout, dry-run before going live, and watch modify/cancel latency in the Performance panel — without splitting work between the exchange UI and ad-hoc scripts.
+Private source: [logicencoder/mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite). API credentials via local `.env` — never committed.
 
-This is the **expanded product** (`mexc-trading-dashboard-bot-suite`). The related [mexc_trading_app](https://github.com/logicencoder/mexc_trading_app) tree is an earlier snapshot with fewer modes — feature parity is not assumed.
+## The problem it solves
 
-**Made by [Logic Encoder](https://logicencoder.com)**
+Discretionary trades and scripted bots usually live in separate tools — exchange UI for manual work, ad-hoc scripts for automation. This suite combines **realtime book + account panels**, **order placement/modify/cancel**, and **mode-specific bot engines** with shared WebSocket ingestion and anti-stale order filtering after cancel/modify.
 
-Private source: [logicencoder/mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite)
+## Manual trading UX
 
----
+Realtime orderbook, trades tape, balances, and open orders. Place and replace orders with immediate lifecycle feedback. The UI reconciles private account protobuf frames with REST snapshots so state drift is visible before it becomes a costly mistake.
 
-## What you can do
+## Bot engine — MODE1 through MODE5
 
-| Area | In plain language |
-|------|-------------------|
-| **Manual trading** | Limit and market buy/sell, % balance shortcuts, cancel and modify open orders from Activity |
-| **MODE1** | Book-reactive instant execution — TAKE (IOC) or PING (GTC + timed cancel) inside your price band |
-| **MODE2** | One resting limit at a time; replenishes on fill inside min/max range |
-| **MODE3** | Step re-entry ladder — each full fill moves the next limit by a percent |
-| **MODE4** | Front-of-book quoting — re-quote when displaced from best bid/ask |
-| **MODE5** | Scheduled exact order at HH:MM:SS with optional one-tick jump |
-| **Multi Bots** | Save profiles (symbol + mode + preset), start/stop several bots in parallel |
-| **Funds** | Deposit/withdraw notifications, expandable funds panel, Funds History tab |
-| **Diagnostics** | Performance metrics, Debug Logs stream, System Stats for stale feeds |
-| **Layout** | Drag panels, collapse stacks, Save Layout, Snapshot UI for backup |
+| Mode | Summary |
+|------|---------|
+| **MODE1** | Book-reactive limit IOC when price enters your band |
+| **MODE2** | Grid-style limit orders within a range |
+| **MODE3** | Sequential re-entry ladder with stop price |
+| **MODE4** | Resting limit at best bid/ask with re-quote when displaced |
+| **MODE5** | Scheduled single-shot order at configured HH:MM:SS |
 
-Feeds update over **MEXC protobuf WebSocket** plus private account streams; the browser reconciles REST when WS stalls.
+Each mode has isolated parameters, runtime logs, preset save/load, and optional dry-run. **Multi-bot profiles** run parallel independent bots without shared global state. Mode5 supports scheduled triggers; quantity can be expressed in coins or USDT.
+
+## Diagnostics
+
+Timing metrics and debug-event persistence for modify-order latency and feed issues — evidence when MEXC API or WebSocket quirks make orders look stuck.
+
+## Stack
+
+| Layer | Role |
+|-------|------|
+| `mexc_trading_app.html` + `mexc_trading_app.js` | UI state, WS rendering, bot controls |
+| `mexc_trading_app.py` | REST, MEXC signing, persistence |
+| `bot_engine.py` | MODE1–MODE5 execution |
+| `generated_proto/` | Exchange stream decode |
+
+Default dev URL: `http://127.0.0.1:8005`.
+
+## Related product
+
+[mexc_trading_app-overview](https://github.com/logicencoder/mexc_trading_app-overview) covers the leaner **MODE1 + MODE2** build when you do not need the full mode suite.
+
+See [REPOS.md](REPOS.md).
 
 ---
 
@@ -122,53 +138,6 @@ Feeds update over **MEXC protobuf WebSocket** plus private account streams; the 
 2. **Snapshot UI** exports layout JSON for backup before a risky settings experiment.
 
 ---
-
-## What it does not do
-
-- **Not** futures or margin — MEXC Spot only
-- **Not** a hosted SaaS — self-hosted with your API keys on hardware you control
-- **Not** identical to `mexc_trading_app` — this suite adds MODE3–5, Multi Bots, and expanded diagnostics
-- **Not** guaranteed exchange uptime — reconnect and stale-feed tooling help, but MEXC outages are external
-
-API keys and trade history stay local — not published in this overview repo.
-
----
-
-## Tech stack
-
-| Layer | Technologies |
-|-------|----------------|
-| Backend | Python 3, FastAPI, uvicorn, asyncio |
-| Bot engine | `bot_engine.py` — MODE1–MODE5, managed multi-bot backend |
-| Exchange | MEXC Spot REST v3 + protobuf WebSocket |
-| Persistence | SQLite — orders, deals, funds, bot logs |
-| Frontend | Vanilla HTML/JS, Tailwind-style dark UI, TradingView embed |
-| Diagnostics | Debug log stream, performance metrics, client log ingest |
-| Config | `.env` — `MEXC_API_KEY`, `MEXC_API_SECRET` |
-
----
-
-## Quick start
-
-```bash
-pip install -r requirements.txt
-cp .env.example .env   # MEXC API keys
-uvicorn mexc_trading_app:app --host 0.0.0.0 --port 8005
-```
-
-See the private repo README for full setup and [REPOS.md](REPOS.md) for repository links.
-
----
-
-## Related repositories
-
-| Repository | Role |
-|------------|------|
-| [mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite) | Private application code (this product) |
-| [mexc-trading-dashboard-bot-suite-overview](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite-overview) | This product overview |
-| [mexc_trading_app](https://github.com/logicencoder/mexc_trading_app) | Related earlier MEXC trading tree |
-
-See [REPOS.md](REPOS.md).
 
 ---
 
