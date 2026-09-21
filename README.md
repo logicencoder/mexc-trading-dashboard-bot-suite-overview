@@ -1,5 +1,7 @@
 # MEXC Trading Dashboard & Bot Suite
 
+![MEXC Trading Dashboard and Bot Suite — chart, order book, and bot panels](assets/bot-suite.png)
+
 Production-grade **MEXC spot** dashboard — manual trading plus **five automation modes** (`MODE1`–`MODE5`), multi-bot profiles, and execution diagnostics in one self-hosted stack.
 
 Discretionary trades and scripted bots usually live in separate tools — exchange UI for manual work, ad-hoc scripts for automation. This suite combines **realtime book + account panels**, **order placement/modify/cancel**, and **mode-specific bot engines** with shared WebSocket ingestion and anti-stale order filtering after cancel/modify.
