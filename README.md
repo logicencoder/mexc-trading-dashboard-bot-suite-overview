@@ -2,11 +2,20 @@
 
 Production-grade **MEXC spot** dashboard — manual trading plus **five automation modes** (`MODE1`–`MODE5`), multi-bot profiles, and execution diagnostics in one self-hosted stack.
 
+Discretionary trades and scripted bots usually live in separate tools — exchange UI for manual work, ad-hoc scripts for automation. This suite combines **realtime book + account panels**, **order placement/modify/cancel**, and **mode-specific bot engines** with shared WebSocket ingestion and anti-stale order filtering after cancel/modify.
+
 Private source: [logicencoder/mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite). API credentials via local `.env` — never committed.
 
-## The problem it solves
+## Tech stack
 
-Discretionary trades and scripted bots usually live in separate tools — exchange UI for manual work, ad-hoc scripts for automation. This suite combines **realtime book + account panels**, **order placement/modify/cancel**, and **mode-specific bot engines** with shared WebSocket ingestion and anti-stale order filtering after cancel/modify.
+| Layer | Role |
+|-------|------|
+| `mexc_trading_app.html` + `mexc_trading_app.js` | UI state, WS rendering, bot controls |
+| `mexc_trading_app.py` | REST, MEXC signing, persistence |
+| `bot_engine.py` | MODE1–MODE5 execution |
+| `generated_proto/` | Exchange stream decode |
+
+Default dev URL: `http://127.0.0.1:8005`.
 
 ## Manual trading UX
 
@@ -28,26 +37,7 @@ Each mode has isolated parameters, runtime logs, preset save/load, and optional 
 
 Timing metrics and debug-event persistence for modify-order latency and feed issues — evidence when MEXC API or WebSocket quirks make orders look stuck.
 
-## Stack
-
-| Layer | Role |
-|-------|------|
-| `mexc_trading_app.html` + `mexc_trading_app.js` | UI state, WS rendering, bot controls |
-| `mexc_trading_app.py` | REST, MEXC signing, persistence |
-| `bot_engine.py` | MODE1–MODE5 execution |
-| `generated_proto/` | Exchange stream decode |
-
-Default dev URL: `http://127.0.0.1:8005`.
-
-## Related product
-
-[mexc_trading_app-overview](https://github.com/logicencoder/mexc_trading_app-overview) covers the leaner **MODE1 + MODE2** build when you do not need the full mode suite.
-
-See [REPOS.md](REPOS.md).
-
----
-
-## Feature examples (two per capability)
+## Operator workflows
 
 #### Live MEXC Spot dashboard
 1. You open the app, switch symbol to `DNXUSDT`, and see last price, live trades, and balances update without refresh.
@@ -138,6 +128,17 @@ See [REPOS.md](REPOS.md).
 2. **Snapshot UI** exports layout JSON for backup before a risky settings experiment.
 
 ---
+
+## Related repositories
+
+| Repository | Role |
+|------------|------|
+| [mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite) | Private application code |
+| [mexc-trading-dashboard-bot-suite-overview](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite-overview) | This product overview |
+
+**Related product:** [mexc_trading_app-overview](https://github.com/logicencoder/mexc_trading_app-overview) covers the leaner **MODE1 + MODE2** build when you do not need the full mode suite.
+
+See [REPOS.md](REPOS.md).
 
 ---
 
