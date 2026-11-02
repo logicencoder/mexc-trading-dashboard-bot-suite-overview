@@ -6,7 +6,7 @@ Public description of the **MEXC Trading Dashboard & Multi-Mode Bot** — manual
 
 **What:** FastAPI backend, rich browser dashboard, and `bot_engine` running **MODE1–MODE5** automation on MEXC spot — order placement, modify/cancel, open orders, balances, and websocket-driven book/trades.  
 **Why:** Operators need one surface for discretionary trades and scripted bots without switching between exchange UI and ad-hoc scripts.  
-**Who:** LogicEncoder operator with MEXC API keys; not a hosted SaaS for third parties.
+**Who:** Logic Encoder operator with MEXC API keys; not a hosted SaaS for third parties.
 
 ## Manual trading UX
 
@@ -49,4 +49,4 @@ See [REPOS.md](REPOS.md).
 
 ## Licensing
 
-© LogicEncoder. Exchange use subject to MEXC terms.
+© Logic Encoder. Exchange use subject to MEXC terms.
