@@ -1,52 +1,41 @@
-# MEXC Trading Dashboard & Bot Suite — overview
+# MEXC Trading Dashboard and Bot Suite
 
-Public description of the **MEXC Trading Dashboard & Multi-Mode Bot** — manual spot trading UI plus automated strategy modes on MEXC. Private code: [mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite).
+![MEXC Trading Dashboard and Bot Suite — chart, order book, and bot panels](assets/bot-suite.png)
 
-## What it is
+Manual trading, order follow-up and bot configuration often require the same market context. This MEXC workstation brings those tasks together so the operator can inspect the market, choose an action and follow its progress from one desk.
 
 **What:** FastAPI backend, rich browser dashboard, and `bot_engine` running **MODE1–MODE5** automation on MEXC spot — order placement, modify/cancel, open orders, balances, and websocket-driven book/trades.  
 **Why:** Operators need one surface for discretionary trades and scripted bots without switching between exchange UI and ad-hoc scripts.  
 **Who:** Logic Encoder operator with MEXC API keys; not a hosted SaaS for third parties.
 
-## Manual trading UX
+## Tech stack
 
-**What:** Real-time orderbook, trades tape, balances, open orders; place and replace orders with immediate lifecycle feedback and anti-stale filtering after cancel/modify.  
-**Why:** Latency and state drift cause costly mistakes; the UI reconciles websocket events with REST snapshots.  
-**Who:** Operator executing discretionary trades during volatile sessions.
+| Layer | Technologies |
+|---|---|
+| Application | Python |
+| Trading interface | HTML, CSS, JavaScript |
+| Exchange integration | MEXC, Protocol Buffers |
 
-## Bot engine (MODE1–MODE5)
+## Keep the market and account context together
 
-**What:** Mode-specific parameters, runtime logs, scheduled triggers (Mode5 time-based), side and quantity units (coins vs USDT), preset save/load, **multi-bot profiles** for parallel independent runs.  
-**Why:** Different strategies (scalp, grid-like, scheduled dump/buy) should not share one global state machine.  
-**Who:** Operator testing automation with clear mode boundaries before leaving bots unattended.
+The order book, recent-trade tape, balances and open orders sit close to the trading controls. This lets the operator inspect depth and current activity before choosing an amount and direction.
 
-## Architecture (private repo)
+After submission, order feedback and the open-order view support following the action. A trade is therefore something to review through its lifecycle rather than a button press detached from the rest of the desk.
 
-| Layer | Files | Role |
-|-------|-------|------|
-| UI | `mexc_trading_app.html`, `mexc_trading_app.js` | State, WS rendering, bot controls |
-| API | `mexc_trading_app.py` | REST, MEXC signing, persistence, diagnostics |
-| Engine | `bot_engine.py` | MODE1–MODE5 execution |
-| Protos | `generated_proto/` | Exchange stream decode |
+## Place and manage manual orders
 
-Default dev URL: `http://127.0.0.1:8005`. Credentials via `.env` (`MEXC_API_KEY`, `MEXC_API_SECRET`) — never committed.
+Manual entry supports working with the selected market while keeping existing orders visible. Replacement and follow-up controls help the operator handle an order that needs adjustment.
 
-## Diagnostics
+Quantity can be expressed in coins or USDT where supported. Review the amount and current order context before proceeding, especially when several activities share the same account.
 
-**What:** Timing metrics and debug-event persistence for modify-order latency and feed issues.  
-**Why:** MEXC API and WS quirks require evidence when orders look “stuck”.  
-**Who:** Operator tuning execution during incidents.
+## Choose an automation mode
 
-## Related repositories
+The suite offers distinct approaches: MODE1 reacts to a chosen price band with immediate-or-cancel limit orders; MODE2 places grid-style limits within a range; MODE3 uses a sequential re-entry ladder and stop price.
 
-| Repo | Role |
-|------|------|
-| [mexc-trading-dashboard-bot-suite](https://github.com/logicencoder/mexc-trading-dashboard-bot-suite) | Private — this product tree |
-| [mexc_trading_app](https://github.com/logicencoder/mexc_trading_app) | Related MEXC trading codebase |
-| [mexc-live-stats-plugin](https://github.com/logicencoder/mexc-live-stats-plugin) | WordPress live stats (Hostinger) |
+MODE4 maintains a resting limit near the best bid or ask and can re-quote when displaced. MODE5 schedules a single action for a selected time. Each mode has its own parameters so the selected behaviour can be reviewed deliberately.
 
-See [REPOS.md](REPOS.md).
+## Reuse a reviewed setup
 
-## Licensing
+Presets make a familiar strategy easier to revisit, while optional dry-run support helps inspect a setup before live use. The operator can retain the settings relevant to a repeated task instead of entering them again from memory.
 
 © Logic Encoder. Exchange use subject to MEXC terms.
