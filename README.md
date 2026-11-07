@@ -1,6 +1,6 @@
 # MEXC Trading Dashboard and Bot Suite
 
-![MEXC Trading Dashboard and Bot Suite — chart, order book, and bot panels](assets/bot-suite.png)
+![MEXC Trading Dashboard and Bot Suite — chart, order book, and bot panels](assets/mexc-trading-dashboard-bot-suite-chart-order-book-bots.png)
 
 MEXC Trading Dashboard and Bot Suite is a self-hosted trading desk for MEXC spot markets: a browser dashboard with a chart, order book, trades tape, balances and order controls, and a bot engine with five automation modes behind it. One operator with MEXC API keys uses it to trade by hand and to run scripted strategies from the same screen, with order feedback and bot logs next to the market.
 
